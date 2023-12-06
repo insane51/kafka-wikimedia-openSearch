@@ -33,16 +33,19 @@ public class WikimediaKafkaApplication {
 		// create the Producer
 		KafkaProducer<String, String> producer = new KafkaProducer<>(props);
 
-		EventHandler eventHandler = new WikimediaChangeHandler(producer, com.kafka.producer.AppConstants.TOPIC_ONLINE);
-		EventSource.Builder builder = new EventSource.Builder(eventHandler,URI.create(com.kafka.producer.AppConstants.PRODUCER_URL));
-		EventSource eventSource = builder.build();
+		try{
+			EventHandler eventHandler = new WikimediaChangeHandler(producer, com.kafka.producer.AppConstants.TOPIC_ONLINE);
+			EventSource.Builder builder = new EventSource.Builder(eventHandler,URI.create(com.kafka.producer.AppConstants.PRODUCER_URL));
+			EventSource eventSource = builder.build();
 
-		//Start the producer in another thread
-		eventSource.start();
+			//Start the producer in another thread
+			eventSource.start();
+
+		}catch(Exception e){
+			logger.error(e.toString());
+		}
 
 		//we produce for 1-minute and block the program until then
 		TimeUnit.SECONDS.sleep(10);
-
 	}
-
 }
